@@ -26,5 +26,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ImagemodelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imagemodel
-        fields = ['id','project_name','project_image','project_location','uploader_name','project_start_date','project_end_date','people_working']
+        fields = ['id','project_name','project_image','project_location','uploaded_by','project_start_date','project_end_date','people_working']
         
