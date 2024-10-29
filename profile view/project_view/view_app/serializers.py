@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser,Imagemodel
  
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,3 +22,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])  # Hash the password
         user.save()
         return user
+    
+class ImagemodelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Imagemodel
+        fields = ['id','project_name','project_image','project_location','uploader_name','project_start_date','project_end_date','people_working']
+        

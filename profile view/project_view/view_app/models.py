@@ -24,3 +24,12 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+class Imagemodel(models.Model):
+    project_name = models.CharField(max_length=250)
+    project_image = models.FileField(upload_to='Document/')
+    project_location = models.CharField(max_length = 250)
+    Uploader_name = models.CharField(max_length = 250)
+    project_start_date = models.DateField()
+    project_end_date = models.DateField()
+    people_working = models.IntegerField()

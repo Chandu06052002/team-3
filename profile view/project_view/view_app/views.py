@@ -4,8 +4,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import CustomUser
-from .serializers import RegisterSerializer, CustomUserSerializer
+from .models import CustomUser,Imagemodel
+from .serializers import RegisterSerializer, CustomUserSerializer,ImagemodelSerializer
+from rest_framework.parsers import MultiPartParser,FormParser
+
  
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -38,6 +40,8 @@ class UserDetailView(APIView):
         user = request.user
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)
+    
+    
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
  
@@ -48,3 +52,14 @@ class LogoutView(APIView):
             return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({"detail": "Token does not exist."}, status=status.HTTP_400_BAD_REQUEST)    
+        
+class Imageupload(APIView):
+    parser_classes = (MultiPartParser,FormParser)
+
+    def post(self,request,*args,**kwargs):
+        serializer = ImagemodelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    

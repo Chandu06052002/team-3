@@ -23,11 +23,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',  # Add token authentication
     'view_app',  # Include your app here
+    'corsheaders',
 ]
  
 AUTH_USER_MODEL = 'view_app.CustomUser'  # Use the custom user model
  
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -36,6 +38,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True 
  
 ROOT_URLCONF = 'project_view.urls'
  
@@ -90,6 +94,10 @@ USE_TZ = True
  
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
  
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -101,3 +109,6 @@ REST_FRAMEWORK = {
     ],
 }
 AUTH_USER_MODEL = 'view_app.CustomUser'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
