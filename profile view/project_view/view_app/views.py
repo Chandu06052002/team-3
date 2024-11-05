@@ -22,6 +22,8 @@ from .serializers import (
     GravelmodelSerializer,
     )
 from rest_framework.parsers import MultiPartParser,FormParser
+from .models import Worker
+from .serializers import WorkerSerializer
 
  
 class RegisterView(APIView):
@@ -95,6 +97,7 @@ class ChangePassword(APIView):
         user.save()
 
         return Response({"success":"password updated sucessfully"},status=status.HTTP_200_OK)
+<<<<<<< HEAD
     
 
 
@@ -171,3 +174,18 @@ class ResourceView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
         
+=======
+class AddWorkerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != 'supervisor':
+            return Response({"detail": "You do not have permission to add workers."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set the hired_by field to the current user
+            worker = serializer.save(hired_by=request.user)  # This sets hired_by automatically
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> 8282c6bc3c5049c6c07e71e163b96be7d3dd45ea
