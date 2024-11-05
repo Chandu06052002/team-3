@@ -34,7 +34,7 @@ class Imagemodel(models.Model):
     project_start_date = models.DateField()
     project_end_date = models.DateField()
     people_working = models.IntegerField()
-<<<<<<< HEAD
+
 
 # RESOURCES OF THE PROJECT
 
@@ -61,7 +61,7 @@ class Gravelmodel(models.Model):
     no_of_trucks_used = models.IntegerField()
     no_of_trucks_left = models.IntegerField()
     trucks_arrival_date = models.DateField()
-=======
+
 class Worker(models.Model):
     name = models.CharField(max_length=255)
     job_title = models.CharField(max_length=255)
@@ -69,4 +69,4 @@ class Worker(models.Model):
 
     def __str__(self):
         return self.name
->>>>>>> 8282c6bc3c5049c6c07e71e163b96be7d3dd45ea
+

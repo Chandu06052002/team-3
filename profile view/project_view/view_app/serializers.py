@@ -1,10 +1,7 @@
 from rest_framework import serializers
-<<<<<<< HEAD
 from .models import CustomUser,Imagemodel,Cementmodel,Sandmodel,Bricksmodel,Gravelmodel
-=======
-from .models import CustomUser,Imagemodel
 from .models import Worker
->>>>>>> 8282c6bc3c5049c6c07e71e163b96be7d3dd45ea
+
  
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +29,7 @@ class ImagemodelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imagemodel
         fields = ['id','project_name','project_image','project_location','uploaded_by','project_start_date','project_end_date','people_working']
-<<<<<<< HEAD
+
 
 
 class CementmodelSerializer(serializers.ModelSerializer):
@@ -54,10 +51,10 @@ class GravelmodelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gravelmodel
         fields = ['id','Total_trucks_of_gravel','no_of_trucks_used','no_of_trucks_left','trucks_arrival_date']
-=======
+
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
         fields = ['id', 'name', 'job_title']
                
->>>>>>> 8282c6bc3c5049c6c07e71e163b96be7d3dd45ea
+

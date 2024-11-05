@@ -97,7 +97,7 @@ class ChangePassword(APIView):
         user.save()
 
         return Response({"success":"password updated sucessfully"},status=status.HTTP_200_OK)
-<<<<<<< HEAD
+
     
 
 
@@ -173,8 +173,6 @@ class ResourceView(APIView):
         serializer = serializer_class(resource)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        
-=======
 class AddWorkerView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -188,4 +186,3 @@ class AddWorkerView(APIView):
             worker = serializer.save(hired_by=request.user)  # This sets hired_by automatically
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> 8282c6bc3c5049c6c07e71e163b96be7d3dd45ea
