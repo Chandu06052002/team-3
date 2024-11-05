@@ -33,3 +33,29 @@ class Imagemodel(models.Model):
     project_start_date = models.DateField()
     project_end_date = models.DateField()
     people_working = models.IntegerField()
+
+# RESOURCES OF THE PROJECT
+
+class Cementmodel(models.Model):
+    total_bags = models.IntegerField()
+    no_of_bags_used = models.IntegerField()
+    no_of_bags_left = models.IntegerField()
+    bags_arrival_date = models.DateField()
+
+class Sandmodel(models.Model):
+    Total_trucks = models.IntegerField()
+    no_of_trucks_used = models.IntegerField()
+    no_of_trucks_left = models.IntegerField()
+    trucks_arrival_date = models.DateField()
+
+class Bricksmodel(models.Model):
+    Total_bricks = models.IntegerField()
+    no_of_bricks_used = models.IntegerField()
+    no_of_bricks_left = models.IntegerField()
+    bricks_arrival_date = models.DateField()
+
+class Gravelmodel(models.Model):
+    Total_trucks_of_gravel = models.IntegerField()
+    no_of_trucks_used = models.IntegerField()
+    no_of_trucks_left = models.IntegerField()
+    trucks_arrival_date = models.DateField()

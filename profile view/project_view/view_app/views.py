@@ -4,8 +4,23 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import CustomUser,Imagemodel
-from .serializers import RegisterSerializer, CustomUserSerializer,ImagemodelSerializer
+from .models import (
+    CustomUser,
+    Imagemodel,
+    Cementmodel,
+    Sandmodel,
+    Bricksmodel,
+    Gravelmodel,
+    )
+from .serializers import (
+    RegisterSerializer, 
+    CustomUserSerializer,
+    ImagemodelSerializer,
+    CementmodelSerializer,
+    SandmodelSerializer,
+    BricksmodelSerializer,
+    GravelmodelSerializer,
+    )
 from rest_framework.parsers import MultiPartParser,FormParser
 
  
@@ -80,3 +95,79 @@ class ChangePassword(APIView):
         user.save()
 
         return Response({"success":"password updated sucessfully"},status=status.HTTP_200_OK)
+    
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import CementmodelSerializer, SandmodelSerializer, BricksmodelSerializer, GravelmodelSerializer
+
+class ResourceView(APIView):
+    def get_serializer_class(self, resource_type):
+        """Return the serializer class based on the resource type."""
+        if resource_type == 'cement':
+            return CementmodelSerializer
+        elif resource_type == 'sand':
+            return SandmodelSerializer
+        elif resource_type == 'bricks':
+            return BricksmodelSerializer
+        elif resource_type == 'gravel':
+            return GravelmodelSerializer
+        else:
+            return None
+
+    def post(self, request):
+        # Check if the user is a supervisor
+        if request.user.role != 'supervisor':
+            return Response(
+                {"detail": "Only supervisors can create resources."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Get the resource type from the request data
+        resource_type = request.data.get('resource_type')
+        serializer_class = self.get_serializer_class(resource_type)
+
+        # If the resource type is invalid, return an error
+        if serializer_class is None:
+            return Response(
+                {"detail": "Invalid resource type specified."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Initialize the serializer with the data
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk=None):
+        """Retrieve a specific resource by its primary key (pk)."""
+        resource_type = request.query_params.get('resource_type')
+        serializer_class = self.get_serializer_class(resource_type)
+
+        if serializer_class is None:
+            return Response(
+                {"detail": "Invalid resource type specified."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get the specific model based on the serializer
+        model_class = serializer_class.Meta.model
+        try:
+            resource = model_class.objects.get(pk=pk)
+        except model_class.DoesNotExist:
+            return Response(
+                {"detail": "Resource not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Serialize and return the resource
+        serializer = serializer_class(resource)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        
