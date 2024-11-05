@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser,Imagemodel
+from .models import Worker
  
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,4 +28,8 @@ class ImagemodelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imagemodel
         fields = ['id','project_name','project_image','project_location','uploaded_by','project_start_date','project_end_date','people_working']
-        
+class WorkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Worker
+        fields = ['id', 'name', 'job_title']
+               

@@ -7,6 +7,8 @@ from rest_framework import status
 from .models import CustomUser,Imagemodel
 from .serializers import RegisterSerializer, CustomUserSerializer,ImagemodelSerializer
 from rest_framework.parsers import MultiPartParser,FormParser
+from .models import Worker
+from .serializers import WorkerSerializer
 
  
 class RegisterView(APIView):
@@ -80,3 +82,16 @@ class ChangePassword(APIView):
         user.save()
 
         return Response({"success":"password updated sucessfully"},status=status.HTTP_200_OK)
+class AddWorkerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != 'supervisor':
+            return Response({"detail": "You do not have permission to add workers."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set the hired_by field to the current user
+            worker = serializer.save(hired_by=request.user)  # This sets hired_by automatically
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from .views import RegisterView, LoginView, UserDetailView
 from .views import LogoutView,Imageupload,ChangePassword
+from .views import AddWorkerView
  
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('logout/',LogoutView.as_view(), name='logout'),
     path('upload/',Imageupload.as_view(),name='upload'),
     path('change_password/',ChangePassword.as_view(),name='password_change'),
+    path('add_worker/', AddWorkerView.as_view(), name='add-worker'),
 ]
 
 
