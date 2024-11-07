@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser,Imagemodel,Cementmodel,Sandmodel,Bricksmodel,Gravelmodel
+from .models import CustomUser,Imagemodel,MaterialModel
 from .models import Worker
 
  
@@ -32,25 +32,22 @@ class ImagemodelSerializer(serializers.ModelSerializer):
 
 
 
-class CementmodelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cementmodel
-        fields = ['id','total_bags','no_of_bags_used','no_of_bags_left','arrival_date']
 
-class SandmodelSerializer(serializers.ModelSerializer):
+class MaterialModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Sandmodel
-        fields = ['id','Total_trucks','no_of_trucks_used','no_of_trucks_left','trucks_arrival_date']
+        model = MaterialModel
+        fields = ['id', 'material_type', 'total_quantity', 'quantity_used', 'quantity_left', 'arrival_date']
+        read_only_fields = ['quantity_left']  # Make quantity_left read-only since it's auto-calculated
 
-class BricksmodelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bricksmodel
-        fields = ['id','Total_bricks','no_of_bricks_used','no_of_bricks_left','bricks_arrival_date']
-
-class GravelmodelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Gravelmodel
-        fields = ['id','Total_trucks_of_gravel','no_of_trucks_used','no_of_trucks_left','trucks_arrival_date']
+    def validate_quantity_used(self, value):
+        """
+        Ensure that quantity_used does not exceed total_quantity.
+        """
+        total_quantity = self.initial_data.get('total_quantity')
+        if total_quantity is not None and value > int(total_quantity):
+            raise serializers.ValidationError("Quantity used cannot exceed total quantity.")
+        return value
+    
 
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
