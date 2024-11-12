@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
 
+# REGISTER DATA
  
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -32,9 +33,11 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(({'token': token.key},{"msg":"User registered successfully"}),status=status.HTTP_201_CREATED)
+        return Response((serializer.errors,{"msg":"please provide valid details"}), status=status.HTTP_400_BAD_REQUEST)
  
+# LOGIN DATA
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
  
@@ -45,17 +48,20 @@ class LoginView(APIView):
  
         if user is not None:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            return Response(({'token': token.key},{"msg":"User login successfully"}), status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
  
+# USER DETAILS DATA
+
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
  
     def get(self, request):
         user = request.user
         serializer = CustomUserSerializer(user)
-        return Response(serializer.data)
+        return Response((serializer.data,{"msg":"User details fetched successfully"}),status=status.HTTP_200_OK)
     
+# LOGOUT DATA 
     
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -67,7 +73,9 @@ class LogoutView(APIView):
             return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({"detail": "Token does not exist."}, status=status.HTTP_400_BAD_REQUEST)    
-        
+
+# IMAGEFIELD DATA
+
 class Imageupload(APIView):
     parser_classes = (MultiPartParser,FormParser)
 
@@ -75,9 +83,10 @@ class Imageupload(APIView):
         serializer = ImagemodelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response((serializer.data,{"msg":"details uploaded successfully"}),status=status.HTTP_201_CREATED)
+        return Response((serializer.errors,{"msg":"please provide valid details"}),status=status.HTTP_400_BAD_REQUEST)
     
+# PASSWORD CHANGE DATA
 
 class ChangePassword(APIView):
     permission_classes = [IsAuthenticated]
@@ -97,7 +106,7 @@ class ChangePassword(APIView):
         return Response({"success":"password updated sucessfully"},status=status.HTTP_200_OK)
 
 
-
+#RESOURCE DATA
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ResourceView(APIView):
@@ -135,7 +144,9 @@ class ResourceView(APIView):
             }, status=status.HTTP_201_CREATED)
         except ValueError:
             return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        
+# WORKERS DATA
 
 class AddWorkerView(APIView):
     permission_classes = [IsAuthenticated]
@@ -148,5 +159,5 @@ class AddWorkerView(APIView):
         if serializer.is_valid():
             # Set the hired_by field to the current user
             worker = serializer.save(hired_by=request.user)  # This sets hired_by automatically
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response((serializer.data,{"msg":"worker created successfully"}), status=status.HTTP_201_CREATED)
+        return Response((serializer.errors,{"msg":"please provide required details"}), status=status.HTTP_400_BAD_REQUEST)
