@@ -112,6 +112,14 @@ class ChangePassword(APIView):
 class ResourceView(APIView):
     def post(self, request, *args, **kwargs):
         try:
+            # Check if the user has a supervisor role
+            if not hasattr(request.user, 'role') or request.user.role.lower() != 'supervisor':
+                return JsonResponse(
+                    {'error': 'Only supervisors can add materials'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # Parse JSON data
             data = json.loads(request.body)
             material_type = data.get('material_type')
             total_quantity = data.get('total_quantity')
@@ -120,7 +128,7 @@ class ResourceView(APIView):
 
             # Validate that required fields are provided
             if not all([material_type, total_quantity, quantity_used, arrival_date]):
-                return JsonResponse({'error': 'All fields are required'}, status=400)
+                return JsonResponse({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create a new MaterialModel object
             material = MaterialModel(
@@ -131,7 +139,8 @@ class ResourceView(APIView):
             )
             material.save()
 
-            return JsonResponse({
+            # Prepare response data
+            response_data = {
                 'message': 'Material added successfully',
                 'data': {
                     'id': material.id,
@@ -141,10 +150,16 @@ class ResourceView(APIView):
                     'quantity_left': material.quantity_left,
                     'arrival_date': material.arrival_date
                 }
-            }, status=status.HTTP_201_CREATED)
-        except ValueError:
-            return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
+            }
+
+            return JsonResponse(response_data, status=status.HTTP_201_CREATED)
         
+        except ValueError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            # Catch any other unexpected errors
+            return JsonResponse({'error': 'An unexpected error occurred', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 # WORKERS DATA
 
