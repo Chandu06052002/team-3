@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser,Imagemodel,MaterialModel
+from .models import CustomUser,Projectmodel,MaterialModel
 from .models import Worker
 
  
@@ -25,9 +25,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-class ImagemodelSerializer(serializers.ModelSerializer):
+class ProjectmodelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Imagemodel
+        model = Projectmodel
         fields = ['id','project_name','project_image','project_location','uploaded_by','project_start_date','project_end_date','people_working']
 
 

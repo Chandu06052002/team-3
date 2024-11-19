@@ -6,13 +6,13 @@ from rest_framework.views import APIView
 from rest_framework import status
 from .models import (
     CustomUser,
-    Imagemodel,
+    Projectmodel,
     MaterialModel,
     )
 from .serializers import (
     RegisterSerializer, 
     CustomUserSerializer,
-    ImagemodelSerializer,
+    ProjectmodelSerializer,
     MaterialModelSerializer,
     )
 from rest_framework.parsers import MultiPartParser,FormParser
@@ -76,11 +76,11 @@ class LogoutView(APIView):
 
 # IMAGEFIELD DATA
 
-class Imageupload(APIView):
+class Projectupload(APIView):
     parser_classes = (MultiPartParser,FormParser)
 
     def post(self,request,*args,**kwargs):
-        serializer = ImagemodelSerializer(data=request.data)
+        serializer = ProjectmodelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response((serializer.data,{"msg":"details uploaded successfully"}),status=status.HTTP_201_CREATED)

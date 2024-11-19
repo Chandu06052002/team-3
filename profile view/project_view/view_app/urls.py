@@ -2,8 +2,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from .views import RegisterView, LoginView, UserDetailView
-from .views import LogoutView,Imageupload,ChangePassword,ResourceView
-from .views import LogoutView,Imageupload,ChangePassword
+from .views import LogoutView,Projectupload,ChangePassword,ResourceView
+
 from .views import AddWorkerView
  
 urlpatterns = [
@@ -11,7 +11,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('user/', UserDetailView.as_view(), name='user-detail'),
     path('logout/',LogoutView.as_view(), name='logout'),
-    path('upload/',Imageupload.as_view(),name='upload'),
+    path('upload_project/',Projectupload.as_view(),name='upload_project'),
     path('change_password/',ChangePassword.as_view(),name='password_change'),
 
     path('resources/',ResourceView.as_view(),name='enter resources'),
