@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser,Projectmodel,MaterialModel
-from .models import Worker
+from .models import Worker,TaskModel
 
  
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -52,6 +52,32 @@ class MaterialModelSerializer(serializers.ModelSerializer):
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
-        fields = ['id', 'name', 'job_title']
+        fields = ['id', 'name', 'job_title','is_working','worker_id']
                
+
+class TaskSerializer(serializers.ModelSerializer):
+    worker = serializers.ListField(child=serializers.CharField(), write_only=True)
+    
+    class Meta:
+        model = TaskModel
+        fields = '__all__'
+
+    def create(self, validate_data):
+        workers_data = validate_data.pop('worker', [])
+        task = TaskModel.objects.create(**validate_data)
+
+        for worker_id in workers_data:
+            try:
+                worker = Worker.objects.get(worker_id=worker_id)
+                if not worker.is_working:
+                    task.worker.add(worker)
+                    worker.is_working = True
+                    worker.save()
+                else:
+                    raise serializers.ValidationError(f"Worker with ID {worker_id} is already working")
+            except Worker.DoesNotExist:
+                raise serializers.ValidationError(f"Worker with ID {worker_id} does not exist")
+
+        return task
+
 

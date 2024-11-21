@@ -8,12 +8,14 @@ from .models import (
     CustomUser,
     Projectmodel,
     MaterialModel,
+    TaskModel,
     )
 from .serializers import (
     RegisterSerializer, 
     CustomUserSerializer,
     ProjectmodelSerializer,
     MaterialModelSerializer,
+    TaskSerializer,
     )
 from rest_framework.parsers import MultiPartParser,FormParser
 from .models import Worker
@@ -22,6 +24,13 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
+import uuid
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from project_view.settings import EMAIL_HOST_USER
+
+
+
 
 # REGISTER DATA
  
@@ -40,17 +49,45 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
- 
+
     def post(self, request):
+        # Get credentials from request data
+        email = request.data.get('email')
         username = request.data.get('username')
         password = request.data.get('password')
+
+        # Authenticate user
         user = authenticate(username=username, password=password)
- 
+
         if user is not None:
+            # Generate or get existing token
             token, created = Token.objects.get_or_create(user=user)
-            return Response(({'token': token.key},{"msg":"User login successfully"}), status=status.HTTP_200_OK)
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
- 
+
+            # Send email upon successful login
+            if email:
+                subject = "User Login Notification"
+                message = f"Dear {username}, you have successfully logged in."
+                recipient_list = [email]
+                send_mail(
+                    subject,
+                    message,
+                    EMAIL_HOST_USER,  # Use Django settings
+                    recipient_list,
+                    fail_silently=True,
+                )
+
+            return Response(
+                {"token": token.key, "msg": "User login successful"},
+                status=status.HTTP_200_OK,
+            )
+
+        # Return an error for invalid credentials
+        return Response(
+            {"error": "Invalid credentials"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    
+
 # USER DETAILS DATA
 
 class UserDetailView(APIView):
@@ -176,3 +213,18 @@ class AddWorkerView(APIView):
             worker = serializer.save(hired_by=request.user)  # This sets hired_by automatically
             return Response((serializer.data,{"msg":"worker created successfully"}), status=status.HTTP_201_CREATED)
         return Response((serializer.errors,{"msg":"please provide required details"}), status=status.HTTP_400_BAD_REQUEST)
+
+
+class TaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        if request.user.role != "supervisor":
+            return Response({"msg":"you don't have permission to add task"},status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            task = serializer.save(created_by= request.user)
+            return Response((serializer.data,{"msg":"task created successfully"}),status=status.HTTP_201_CREATED)
+        return Response((serializer.errors,{"msg":"please provide valid details"}),status=status.HTTP_400_BAD_REQUEST)
+    

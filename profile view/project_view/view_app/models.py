@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
@@ -35,6 +37,9 @@ class Projectmodel(models.Model):
     project_end_date = models.DateField()
     people_working = models.IntegerField()
 
+    def __str__(self):
+        return self.project_name
+
 
 # RESOURCES OF THE PROJECT
 
@@ -65,7 +70,22 @@ class MaterialModel(models.Model):
 class Worker(models.Model):
     name = models.CharField(max_length=255)
     job_title = models.CharField(max_length=255)
-    hired_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='workers')  # Links the worker to the supervisor
+    hired_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='workers')
+    is_working = models.BooleanField(default=False)  
+    worker_id = models.IntegerField(max_length=5,default=00000) # Links the worker to the supervisor
 
     def __str__(self):
         return self.name
+    
+
+class TaskModel(models.Model):
+    task_name = models.CharField(max_length=250)
+    project_name = models.ForeignKey('Projectmodel',on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    worker = models.ManyToManyField('Worker',blank=True)
+
+    def __str__(self):
+        return self.task_name
+    
+

@@ -2,9 +2,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from .views import RegisterView, LoginView, UserDetailView
-from .views import LogoutView,Projectupload,ChangePassword,ResourceView
+from .views import LogoutView,Projectupload,ChangePassword,ResourceView,TaskView,AddWorkerView
 
-from .views import AddWorkerView
+ 
  
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -17,7 +17,7 @@ urlpatterns = [
     path('resources/',ResourceView.as_view(),name='enter resources'),
     path('resources/<str:resource_type>/<int:pk>/', ResourceView.as_view(), name='resource-detail'),
     path('add_worker/', AddWorkerView.as_view(), name='add-worker'),
-
+    path('upload_task/',TaskView.as_view(),name="upload_task"),
 ]
 
 
