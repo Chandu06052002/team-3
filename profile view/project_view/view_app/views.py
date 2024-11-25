@@ -113,15 +113,32 @@ class LogoutView(APIView):
 
 # IMAGEFIELD DATA
 
-class Projectupload(APIView):
-    parser_classes = (MultiPartParser,FormParser)
 
-    def post(self,request,*args,**kwargs):
+class Projectupload(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        # Check user role
+        if request.user.role != 'manager':
+            return Response(
+                {"detail": "You do not have permission to upload project details."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Serialize the data
         serializer = ProjectmodelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response((serializer.data,{"msg":"details uploaded successfully"}),status=status.HTTP_201_CREATED)
-        return Response((serializer.errors,{"msg":"please provide valid details"}),status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"data": serializer.data, "msg": "Details uploaded successfully."},
+                status=status.HTTP_201_CREATED
+            )
+
+        # Handle invalid data
+        return Response(
+            {"errors": serializer.errors, "msg": "Please provide valid details."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
 # PASSWORD CHANGE DATA
 
