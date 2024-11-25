@@ -224,7 +224,7 @@ class TaskView(APIView):
         
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
-            task = serializer.save(created_by= request.user)
+            task = serializer.save
             return Response((serializer.data,{"msg":"task created successfully"}),status=status.HTTP_201_CREATED)
         return Response((serializer.errors,{"msg":"please provide valid details"}),status=status.HTTP_400_BAD_REQUEST)
     
